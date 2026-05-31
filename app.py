@@ -2,14 +2,10 @@ import os
 
 import streamlit as st
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# --------------------------------------------------
-# Page configuration
-# --------------------------------------------------
 st.set_page_config(
     page_title="Forensic Glass EDA Dashboard",
     page_icon="🔬",
@@ -19,9 +15,6 @@ st.set_page_config(
 sns.set_theme(style="whitegrid")
 
 
-# --------------------------------------------------
-# Load dataset
-# --------------------------------------------------
 @st.cache_data
 def load_data():
     columns = [
@@ -87,9 +80,6 @@ numeric_features = [
 ]
 
 
-# --------------------------------------------------
-# Dashboard title
-# --------------------------------------------------
 st.title("🔬 Forensic Glass Classification EDA Dashboard")
 
 st.markdown(
@@ -100,9 +90,6 @@ st.markdown(
 )
 
 
-# --------------------------------------------------
-# Sidebar filters
-# --------------------------------------------------
 st.sidebar.header("Dashboard Filters")
 
 if st.sidebar.button("Reset / Clear Filters"):
@@ -143,9 +130,6 @@ search_sample = st.sidebar.text_input(
 )
 
 
-# --------------------------------------------------
-# Apply filters
-# --------------------------------------------------
 filtered_df = df.copy()
 
 filtered_df = filtered_df[
@@ -172,9 +156,6 @@ if filtered_df.empty:
     st.stop()
 
 
-# --------------------------------------------------
-# KPI cards
-# --------------------------------------------------
 st.subheader("Key Performance Indicators")
 
 kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
@@ -186,9 +167,6 @@ kpi4.metric("Highest Sodium", round(filtered_df["sodium"].max(), 2))
 kpi5.metric("Highest Calcium", round(filtered_df["calcium"].max(), 2))
 
 
-# --------------------------------------------------
-# Dataset overview
-# --------------------------------------------------
 with st.expander("View Dataset and Cleaning Summary"):
     st.write("Filtered Dataset Preview")
     st.dataframe(filtered_df.head(20), use_container_width=True)
@@ -205,9 +183,6 @@ with st.expander("View Dataset and Cleaning Summary"):
     col3.write(filtered_df.duplicated().sum())
 
 
-# --------------------------------------------------
-# Dashboard tabs
-# --------------------------------------------------
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
     [
         "Distribution",
@@ -219,9 +194,6 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
 )
 
 
-# --------------------------------------------------
-# Tab 1: Distribution charts
-# --------------------------------------------------
 with tab1:
     st.subheader("Glass Type Distribution")
 
@@ -275,9 +247,6 @@ with tab1:
     plt.close(fig)
 
 
-# --------------------------------------------------
-# Tab 2: Comparison charts
-# --------------------------------------------------
 with tab2:
     st.subheader("Chemical Composition Comparison")
 
@@ -337,9 +306,6 @@ with tab2:
     plt.close(fig)
 
 
-# --------------------------------------------------
-# Tab 3: Relationship charts
-# --------------------------------------------------
 with tab3:
     st.subheader("Relationships Between Chemical Features")
 
@@ -377,9 +343,6 @@ with tab3:
     plt.close(fig)
 
 
-# --------------------------------------------------
-# Tab 4: Outlier and spread charts
-# --------------------------------------------------
 with tab4:
     st.subheader("Outlier and Distribution Analysis")
 
@@ -416,9 +379,6 @@ with tab4:
     plt.close(fig)
 
 
-# --------------------------------------------------
-# Tab 5: Correlation heatmap
-# --------------------------------------------------
 with tab5:
     st.subheader("Correlation Analysis")
 
@@ -439,9 +399,6 @@ with tab5:
     plt.close(fig)
 
 
-# --------------------------------------------------
-# Key insights
-# --------------------------------------------------
 st.subheader("Key Insights")
 
 most_common_type = filtered_df["glass_type_name"].value_counts().idxmax()
@@ -458,8 +415,5 @@ st.markdown(
 )
 
 
-# --------------------------------------------------
-# Footer
-# --------------------------------------------------
 st.markdown("---")
 st.caption("Exploratory Data Analysis Dashboard Project | Forensic Glass Dataset")

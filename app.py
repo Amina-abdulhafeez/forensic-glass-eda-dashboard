@@ -38,16 +38,23 @@ def load_data():
         "glass_type"
     ]
 
-    file_path_txt = "data/glass.data.txt"
-    file_path_data = "data/glass.data"
+    fpossible_paths = [
+    "data/glass.data.txt",
+    "data/glass.data",
+    "glass.data.txt",
+    "glass.data"
+]
 
-    if os.path.exists(file_path_txt):
-        file_path = file_path_txt
-    elif os.path.exists(file_path_data):
-        file_path = file_path_data
-    else:
-        st.error("Dataset file not found. Please place glass.data.txt inside the data folder.")
-        st.stop()
+file_path = None
+
+for path in possible_paths:
+    if os.path.exists(path):
+        file_path = path
+        break
+
+if file_path is None:
+    st.error("Dataset file not found. Please upload glass.data.txt.")
+    st.stop()
 
     df = pd.read_csv(file_path, header=None, names=columns)
 

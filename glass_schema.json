@@ -1,0 +1,189 @@
+{
+  "dataset_name": "forensic_glass_identification",
+  "display_name": "Glass Samples Chemical Composition",
+  "description": "214 forensic glass samples with refractive index and chemical composition features labeled by glass type.",
+  "source_file": "glass.data.txt",
+  "record_count": 214,
+  "field_count": 11,
+  "format": {
+    "file_type": "CSV without header",
+    "delimiter": ",",
+    "has_header": false
+  },
+  "columns": [
+    {
+      "name": "sample_id",
+      "type": "integer",
+      "role": "identifier",
+      "description": "Unique identifier for each glass sample.",
+      "unit": "integer ID",
+      "nullable": false,
+      "unique_values": 214,
+      "min": 1,
+      "max": 214
+    },
+    {
+      "name": "refractive_index",
+      "type": "number",
+      "role": "feature",
+      "description": "Refractive index (RI) of the glass sample.",
+      "unit": "RI",
+      "nullable": false,
+      "unique_values": 178,
+      "min": 1.51115,
+      "max": 1.53393
+    },
+    {
+      "name": "sodium",
+      "type": "number",
+      "role": "feature",
+      "description": "Sodium oxide content as weight percent.",
+      "unit": "weight percent",
+      "nullable": false,
+      "unique_values": 142,
+      "min": 10.73,
+      "max": 17.38
+    },
+    {
+      "name": "magnesium",
+      "type": "number",
+      "role": "feature",
+      "description": "Magnesium oxide content as weight percent.",
+      "unit": "weight percent",
+      "nullable": false,
+      "unique_values": 94,
+      "min": 0.0,
+      "max": 4.49
+    },
+    {
+      "name": "aluminum",
+      "type": "number",
+      "role": "feature",
+      "description": "Aluminum oxide content as weight percent.",
+      "unit": "weight percent",
+      "nullable": false,
+      "unique_values": 118,
+      "min": 0.29,
+      "max": 3.5
+    },
+    {
+      "name": "silicon",
+      "type": "number",
+      "role": "feature",
+      "description": "Silicon dioxide content as weight percent.",
+      "unit": "weight percent",
+      "nullable": false,
+      "unique_values": 133,
+      "min": 69.81,
+      "max": 75.41
+    },
+    {
+      "name": "potassium",
+      "type": "number",
+      "role": "feature",
+      "description": "Potassium oxide content as weight percent.",
+      "unit": "weight percent",
+      "nullable": false,
+      "unique_values": 65,
+      "min": 0.0,
+      "max": 6.21
+    },
+    {
+      "name": "calcium",
+      "type": "number",
+      "role": "feature",
+      "description": "Calcium oxide content as weight percent.",
+      "unit": "weight percent",
+      "nullable": false,
+      "unique_values": 143,
+      "min": 5.43,
+      "max": 16.19
+    },
+    {
+      "name": "barium",
+      "type": "number",
+      "role": "feature",
+      "description": "Barium oxide content as weight percent.",
+      "unit": "weight percent",
+      "nullable": false,
+      "unique_values": 34,
+      "min": 0.0,
+      "max": 3.15
+    },
+    {
+      "name": "iron",
+      "type": "number",
+      "role": "feature",
+      "description": "Iron oxide content as weight percent.",
+      "unit": "weight percent",
+      "nullable": false,
+      "unique_values": 32,
+      "min": 0.0,
+      "max": 0.51
+    },
+    {
+      "name": "glass_type",
+      "type": "integer",
+      "role": "target",
+      "description": "Target class label indicating the forensic glass type.",
+      "unit": "class code",
+      "nullable": false,
+      "unique_values": 6,
+      "min": 1,
+      "max": 7,
+      "allowed_values": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        7
+      ],
+      "class_mapping": {
+        "1": "building_windows_float_processed",
+        "2": "building_windows_non_float_processed",
+        "3": "vehicle_windows_float_processed",
+        "4": "vehicle_windows_non_float_processed",
+        "5": "containers",
+        "6": "tableware",
+        "7": "headlamps"
+      },
+      "class_counts": {
+        "1": 70,
+        "2": 76,
+        "3": 17,
+        "5": 13,
+        "6": 9,
+        "7": 29
+      }
+    }
+  ],
+  "primary_key": "sample_id",
+  "target_column": "glass_type",
+  "feature_columns": [
+    "refractive_index",
+    "sodium",
+    "magnesium",
+    "aluminum",
+    "silicon",
+    "potassium",
+    "calcium",
+    "barium",
+    "iron"
+  ],
+  "recommended_dashboard_fields": {
+    "filters": [
+      "glass_type"
+    ],
+    "summary_cards": [
+      "record_count",
+      "class_counts"
+    ],
+    "charts": [
+      "glass_type distribution bar chart",
+      "chemical composition boxplots by glass_type",
+      "scatter plot of refractive_index vs chemical features",
+      "correlation heatmap for numeric features"
+    ]
+  }
+}

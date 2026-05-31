@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Page configuration
-# ---------------------------------------------
+# --------------------------------------------------
 st.set_page_config(
-    page_title="Forensic Glass Dashboard",
+    page_title="Forensic Glass EDA Dashboard",
     page_icon="🔬",
     layout="wide"
 )
@@ -19,9 +19,9 @@ st.set_page_config(
 sns.set_theme(style="whitegrid")
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Load dataset
-# ---------------------------------------------
+# --------------------------------------------------
 @st.cache_data
 def load_data():
     columns = [
@@ -38,23 +38,23 @@ def load_data():
         "glass_type"
     ]
 
-    fpossible_paths = [
-    "data/glass.data.txt",
-    "data/glass.data",
-    "glass.data.txt",
-    "glass.data"
-]
+    possible_paths = [
+        "data/glass.data.txt",
+        "data/glass.data",
+        "glass.data.txt",
+        "glass.data"
+    ]
 
-file_path = None
+    file_path = None
 
-for path in possible_paths:
-    if os.path.exists(path):
-        file_path = path
-        break
+    for path in possible_paths:
+        if os.path.exists(path):
+            file_path = path
+            break
 
-if file_path is None:
-    st.error("Dataset file not found. Please upload glass.data.txt.")
-    st.stop()
+    if file_path is None:
+        st.error("Dataset file not found. Please upload glass.data.txt or glass.data.")
+        st.stop()
 
     df = pd.read_csv(file_path, header=None, names=columns)
 
@@ -87,9 +87,9 @@ numeric_features = [
 ]
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Dashboard title
-# ---------------------------------------------
+# --------------------------------------------------
 st.title("🔬 Forensic Glass Classification EDA Dashboard")
 
 st.markdown(
@@ -100,9 +100,9 @@ st.markdown(
 )
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Sidebar filters
-# ---------------------------------------------
+# --------------------------------------------------
 st.sidebar.header("Dashboard Filters")
 
 if st.sidebar.button("Reset / Clear Filters"):
@@ -143,9 +143,9 @@ search_sample = st.sidebar.text_input(
 )
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Apply filters
-# ---------------------------------------------
+# --------------------------------------------------
 filtered_df = df.copy()
 
 filtered_df = filtered_df[
@@ -167,15 +167,14 @@ if search_sample.strip() != "":
         filtered_df["sample_id"].astype(str).str.contains(search_sample.strip())
     ]
 
-
 if filtered_df.empty:
     st.warning("No data found for the selected filters. Please reset or change filters.")
     st.stop()
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # KPI cards
-# ---------------------------------------------
+# --------------------------------------------------
 st.subheader("Key Performance Indicators")
 
 kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
@@ -187,12 +186,12 @@ kpi4.metric("Highest Sodium", round(filtered_df["sodium"].max(), 2))
 kpi5.metric("Highest Calcium", round(filtered_df["calcium"].max(), 2))
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Dataset overview
-# ---------------------------------------------
+# --------------------------------------------------
 with st.expander("View Dataset and Cleaning Summary"):
     st.write("Filtered Dataset Preview")
-    st.dataframe(filtered_df.head(20), width="stretch")
+    st.dataframe(filtered_df.head(20), use_container_width=True)
 
     col1, col2, col3 = st.columns(3)
 
@@ -206,9 +205,9 @@ with st.expander("View Dataset and Cleaning Summary"):
     col3.write(filtered_df.duplicated().sum())
 
 
-# ---------------------------------------------
-# Tabs for charts
-# ---------------------------------------------
+# --------------------------------------------------
+# Dashboard tabs
+# --------------------------------------------------
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
     [
         "Distribution",
@@ -220,9 +219,9 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
 )
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Tab 1: Distribution charts
-# ---------------------------------------------
+# --------------------------------------------------
 with tab1:
     st.subheader("Glass Type Distribution")
 
@@ -241,9 +240,11 @@ with tab1:
         )
         ax.set_title("Percentage Distribution of Glass Types")
         st.pyplot(fig)
+        plt.close(fig)
 
     with col2:
         st.markdown("### Count Plot: Number of Samples by Glass Type")
+
         fig, ax = plt.subplots(figsize=(8, 5))
         sns.countplot(
             data=filtered_df,
@@ -255,8 +256,10 @@ with tab1:
         ax.set_xlabel("Number of Samples")
         ax.set_ylabel("Glass Type")
         st.pyplot(fig)
+        plt.close(fig)
 
     st.markdown("### Histogram: Distribution of Selected Chemical Feature")
+
     fig, ax = plt.subplots(figsize=(10, 5))
     sns.histplot(
         data=filtered_df,
@@ -269,16 +272,22 @@ with tab1:
     ax.set_xlabel(selected_feature)
     ax.set_ylabel("Frequency")
     st.pyplot(fig)
+    plt.close(fig)
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Tab 2: Comparison charts
-# ---------------------------------------------
+# --------------------------------------------------
 with tab2:
     st.subheader("Chemical Composition Comparison")
 
     st.markdown("### Bar Chart: Average Chemical Feature by Glass Type")
-    avg_data = filtered_df.groupby("glass_type_name")[selected_feature].mean().sort_values()
+
+    avg_data = (
+        filtered_df.groupby("glass_type_name")[selected_feature]
+        .mean()
+        .sort_values()
+    )
 
     fig, ax = plt.subplots(figsize=(10, 5))
     avg_data.plot(kind="barh", ax=ax)
@@ -286,8 +295,10 @@ with tab2:
     ax.set_xlabel(f"Average {selected_feature}")
     ax.set_ylabel("Glass Type")
     st.pyplot(fig)
+    plt.close(fig)
 
     st.markdown("### Line Chart: Selected Feature by Sample ID")
+
     line_df = filtered_df.sort_values("sample_id")
 
     fig, ax = plt.subplots(figsize=(10, 5))
@@ -302,8 +313,10 @@ with tab2:
     ax.set_xlabel("Sample ID")
     ax.set_ylabel(selected_feature)
     st.pyplot(fig)
+    plt.close(fig)
 
     st.markdown("### Area Chart: Cumulative Selected Feature by Sample ID")
+
     area_df = filtered_df.sort_values("sample_id").copy()
     area_df[f"cumulative_{selected_feature}"] = area_df[selected_feature].cumsum()
 
@@ -321,11 +334,12 @@ with tab2:
     ax.set_xlabel("Sample ID")
     ax.set_ylabel(f"Cumulative {selected_feature}")
     st.pyplot(fig)
+    plt.close(fig)
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Tab 3: Relationship charts
-# ---------------------------------------------
+# --------------------------------------------------
 with tab3:
     st.subheader("Relationships Between Chemical Features")
 
@@ -360,11 +374,12 @@ with tab3:
     ax.set_ylabel(scatter_y)
     ax.legend(title="Glass Type", bbox_to_anchor=(1.05, 1), loc="upper left")
     st.pyplot(fig)
+    plt.close(fig)
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Tab 4: Outlier and spread charts
-# ---------------------------------------------
+# --------------------------------------------------
 with tab4:
     st.subheader("Outlier and Distribution Analysis")
 
@@ -382,6 +397,7 @@ with tab4:
     ax.set_ylabel(selected_feature)
     plt.xticks(rotation=45, ha="right")
     st.pyplot(fig)
+    plt.close(fig)
 
     st.markdown("### Violin Plot: Distribution Density by Glass Type")
 
@@ -397,11 +413,12 @@ with tab4:
     ax.set_ylabel(selected_feature)
     plt.xticks(rotation=45, ha="right")
     st.pyplot(fig)
+    plt.close(fig)
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Tab 5: Correlation heatmap
-# ---------------------------------------------
+# --------------------------------------------------
 with tab5:
     st.subheader("Correlation Analysis")
 
@@ -419,18 +436,21 @@ with tab5:
     )
     ax.set_title("Correlation Matrix of Chemical Features")
     st.pyplot(fig)
+    plt.close(fig)
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Key insights
-# ---------------------------------------------
+# --------------------------------------------------
 st.subheader("Key Insights")
+
+most_common_type = filtered_df["glass_type_name"].value_counts().idxmax()
 
 st.markdown(
     f"""
     - The dashboard currently shows **{len(filtered_df)} filtered samples**.
     - The selected chemical feature is **{selected_feature}**.
-    - The most common glass type in the filtered data is **{filtered_df['glass_type_name'].value_counts().idxmax()}**.
+    - The most common glass type in the filtered data is **{most_common_type}**.
     - The highest value of **{selected_feature}** is **{round(filtered_df[selected_feature].max(), 3)}**.
     - The lowest value of **{selected_feature}** is **{round(filtered_df[selected_feature].min(), 3)}**.
     - The heatmap helps identify relationships between chemical composition features.
@@ -438,8 +458,8 @@ st.markdown(
 )
 
 
-# ---------------------------------------------
+# --------------------------------------------------
 # Footer
-# ---------------------------------------------
+# --------------------------------------------------
 st.markdown("---")
 st.caption("Exploratory Data Analysis Dashboard Project | Forensic Glass Dataset")
